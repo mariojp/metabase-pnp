@@ -1,0 +1,50 @@
+#! /usr/bin/java  --source=17
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+public class Etl {
+    public static void main(String ... args) throws Exception {
+        
+        if (args.length == 0) {
+            System.out.println("Specify file for ETL, for example file.csv");
+            System.out.println("etl file.csv");
+            return;
+        }
+
+        //Ajuste 1 linha do arquivo
+        //O arquivo inicial tem um conjunto de nomes de colunas que precisam ser ajustados
+        System.out.println("CARREGANDO ARQUIVO...");
+        Path path = Paths.get(args[0]);
+
+        BufferedReader reader = Files.newBufferedReader(path);
+        System.out.println("LENDO 1 LINHA...");
+        String line = reader.readLine();
+        line = line.toUpperCase();
+        System.out.println("APLICANDO TRANSFORMAÇÃO...");
+        line = line.replaceAll("-", "")
+        .replaceAll(" ", "_")
+        .replaceAll("__", "_")
+        .replaceAll("Ç", "C")
+        .replaceAll("Ã|Á", "A")
+        .replaceAll("Ê", "E")
+        .replaceAll("Í", "I")
+        .replaceAll("Ó", "O")
+        .replaceAll("Ú", "U")
+        ;
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(args[0]+".etl.csv"));
+        bufferedWriter.append(line+"\r\n");
+        while((line = reader.readLine())!=null){
+            bufferedWriter.append(line+"\r\n");
+        }
+        bufferedWriter.flush();
+        bufferedWriter.close();
+        System.out.println("TRANSFORMAÇÃO CONCLUIDA.");
+
+    }
+}
+
